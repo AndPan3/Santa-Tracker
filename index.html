@@ -32,10 +32,19 @@
   background: rgba(255,255,255,0.9); padding: 10px 12px;
   border-radius: 10px; font-family: system-ui; font-size: 14px;
   box-shadow: 0 4px 18px rgba(0,0,0,0.12);
+  
 ">
   Now delivering in: <b id="city">...</b><br>
   Presents given out: <b id="presents">0</b><br>
-  Distance left: <b id="remaining">0</b> m
+  Presents left: <b id="remaining">0</b> m
+  Progress:
+<div style="margin-top:6px; width:220px; height:10px; background:#ddd; border-radius:999px; overflow:hidden;">
+  <div id="bar" style="height:100%; width:0%; background:#e11d48;"></div>
+</div>
+<div style="margin-top:4px; font-size:12px; opacity:0.8;">
+  <span id="pct">0</span>%
+</div>
+
 </div>
 
 
@@ -271,7 +280,7 @@ function positionAtDistance(dMeters) {
   return { i: route.length - 2, pos: route[route.length - 1] };
 }
 const speed = 200; // meters per second (change this!)
-const START_UTC = "2025-12-24T09:00:00Z"; // example: Dec 24, 10:00 Zurich (CET) = 09:00 UTC
+const START_UTC = "2025-12-22T09:00:00Z"; // example: Dec 24, 10:00 Zurich (CET) = 09:00 UTC
 const START_MS = Date.parse(START_UTC);
 
 function getTraveledNowMeters() {
@@ -288,6 +297,8 @@ let lastTime = null;
 
 const cityEl = document.getElementById("city");
 const presentsEl = document.getElementById("presents");
+const barEl = document.getElementById("bar");
+const pctEl = document.getElementById("pct");
 const remainingEl = document.getElementById("remaining");
 
 function tick(ts) {
@@ -330,6 +341,11 @@ cityEl.textContent = nextCity;
     santa.setLatLng(route[route.length - 1]);
     remainingEl.textContent = "0";
   }
+  const frac = totalDist === 0 ? 0 : (traveled / totalDist);
+const pct = Math.max(0, Math.min(100, frac * 100));
+barEl.style.width = pct.toFixed(2) + "%";
+pctEl.textContent = Math.floor(pct);
+
 }
 
 requestAnimationFrame(tick);
