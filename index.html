@@ -36,7 +36,7 @@
 ">
   Now delivering in: <b id="city">...</b><br>
   Presents given out: <b id="presents">0</b><br>
-  Presents left: <b id="remaining">0</b> m
+  Presents left: <b id="remaining">0</b> 
   Progress:
 <div style="margin-top:6px; width:220px; height:10px; background:#ddd; border-radius:999px; overflow:hidden;">
   <div id="bar" style="height:100%; width:0%; background:#e11d48;"></div>
@@ -280,8 +280,11 @@ function positionAtDistance(dMeters) {
   return { i: route.length - 2, pos: route[route.length - 1] };
 }
 const speed = 200; // meters per second (change this!)
-const START_UTC = "2025-12-24T09:00:00Z"; // example: Dec 24, 10:00 Zurich (CET) = 09:00 UTC
+const START_UTC = "2025-12-22T09:00:00Z"; // example: Dec 24, 10:00 Zurich (CET) = 09:00 UTC
 const START_MS = Date.parse(START_UTC);
+const TOTAL_PRESENTS = 740000000;
+const PRESENTS_PER_METER = TOTAL_PRESENTS / totalDist; // auto-calculated ppm
+
 
 function getTraveledNowMeters() {
   const nowMs = Date.now();
@@ -307,18 +310,30 @@ function tick(ts) {
   lastTime = ts;
 
   // move forward at constant speed
-  if (Date.now() < START_MS) {
+if (Date.now() < START_MS) {
   cityEl.textContent = "Starting soon...";
+  presentsEl.textContent = "0";
+  remainingEl.textContent = TOTAL_PRESENTS.toLocaleString();
+  barEl.style.width = "0%";
+  pctEl.textContent = "0";
+  santa.setLatLng(route[0]);
+  requestAnimationFrame(tick);
+  return;
 }
+
 
   traveled = getTraveledNowMeters();
 
   if (traveled > totalDist) traveled = totalDist;
 
   // update HUD numbers
-  presentsEl.textContent = Math.floor(traveled); // temporary: 1m = 1 present
-  const remaining = Math.max(0, totalDist - traveled);
-  remainingEl.textContent = Math.floor(remaining);
+// update HUD numbers (presents)
+const presentsGiven = Math.floor(traveled * PRESENTS_PER_METER);
+const presentsLeft = Math.max(0, TOTAL_PRESENTS - presentsGiven);
+
+presentsEl.textContent = presentsGiven.toLocaleString();
+remainingEl.textContent = presentsLeft.toLocaleString();
+
 
   // find current position on the route
   const { i, pos } = positionAtDistance(traveled);
