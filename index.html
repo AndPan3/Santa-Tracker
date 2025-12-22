@@ -3,6 +3,11 @@
   <head>
     <meta charset="utf-8">
     <title>Santa Tracker</title>
+<link rel="preconnect" href="https://tile.openstreetmap.org" crossorigin>
+<link rel="dns-prefetch" href="//tile.openstreetmap.org">
+
+<link rel="preconnect" href="https://unpkg.com" crossorigin>
+<link rel="dns-prefetch" href="//unpkg.com">
 
     <link
       rel="stylesheet"
@@ -22,6 +27,15 @@
   </head>
 
   <body>
+    <div id="hud" style="
+  position: absolute; z-index: 999; top: 12px; left: 12px;
+  background: rgba(255,255,255,0.9); padding: 10px 12px;
+  border-radius: 10px; font-family: system-ui; font-size: 14px;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.12);
+">
+  Now delivering in: <b id="city">...</b>
+</div>
+
     <div id="map"></div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -30,26 +44,263 @@
       const map = L.map("map").setView([47.3769, 8.5417], 6);
 
       // Add OpenStreetMap tiles
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
         maxZoom: 19,
         attribution: "&copy; OpenStreetMap contributors"
       }).addTo(map);
-      // 1) Your GeoJSON (paste yours here)
-const geojson = {
-  "type": "FeatureCollection",
-  "features": [
-    {
-      "type": "Feature",
-      "properties": {},
-      "geometry": {
-        "type": "LineString",
-        "coordinates": [
-          /* paste your coordinates array here */
+
+      const geojson = {
+        "type": "FeatureCollection",
+        "features": [
+          {
+            "type": "Feature",
+            "properties": {},
+            "geometry": {
+              "type": "LineString",
+              "coordinates": [
+                [20.53369975645174, 78.78708023947937],
+                [32.829867360521774, 68.94266954248755],
+                [40.49019640444814, 64.58670511854118],
+                [30.39260905411001, 59.98417844987438],
+                [37.670781021103494, 55.64500146010397],
+                [30.48335804659081, 50.496973501102076],
+                [26.050280726771575, 44.501559600880796],
+                [18.307455805437996, 45.04306962879491],
+                [15.979212990202427, 45.81261223781863],
+                [13.794039551476601, 45.63797427574812],
+                [15.434175292208181, 47.04659196574681],
+                [16.436633128637965, 48.19663860973344],
+                [16.60368045050396, 49.207694416423124],
+                [14.34711619992558, 50.10103871821485],
+                [13.385647520985401, 49.7577433783072],
+                [12.067414388910862, 48.98277943611697],
+                [11.595508277522185, 48.08717211532036],
+                [11.365478144207714, 47.24371914874612],
+                [9.182467078318183, 45.48113829733825],
+                [4.366495237997327, 43.827971603126315],
+                [2.1474713910811545, 41.37080914210415],
+                [-0.3989351093996447, 39.47582737117972],
+                [-2.4547738146788163, 36.87386566404649],
+                [-5.368008914001734, 36.20619751039999],
+                [-6.156254431525696, 36.701073881703294],
+                [-9.113983109785295, 38.695280419045645],
+                [-8.686680970762268, 41.13407625498158],
+                [-4.748488350905717, 41.65395293950161],
+                [-3.687124699899897, 40.43888303905962],
+                [-0.9150161052739065, 41.6492770754121],
+                [1.4311090345748028, 43.614555068393486],
+                [4.807662026341177, 45.78332652691924],
+                [6.113338177569801, 46.17927955189876],
+                [7.35539976611031, 46.23369662633962],
+                [7.6183279202201675, 46.755380129078674],
+                [7.43327918286775, 46.9391978508113],
+                [7.6183279202201675, 47.0518883823589],
+                [7.928387687120875, 47.2792370966867],
+                [7.945806986499662, 47.28846843009984],
+                [5.052991663451309, 47.359064020284194],
+                [2.2844606284711517, 48.84145115135132],
+                [2.292453427009434, 49.894753430380206],
+                [2.9971913221511386, 50.64915518494686],
+                [4.3307506518951016, 50.858092421436965],
+                [6.761204374856646, 51.23522037676531],
+                [12.37663347359873, 51.34395250498514],
+                [13.368575050315854, 52.4721863128768],
+                [9.972740732048436, 53.56305328262019],
+                [-0.13680888467439445, 51.394471455235646],
+                [-1.931847800175575, 52.49080883144333],
+                [-1.5552956725973672, 53.79087190796483],
+                [-1.681660674959602, 55.00514148454798],
+                [-2.099135266587183, 57.142393773946],
+                [5.330007535611372, 60.439040187976815],
+                [10.41940153302923, 63.40515228670324],
+                [19.402794502235082, 69.4787422525354],
+                [19.226511109354902, 78.69389216659314]
+              ]
+            }
+          }
         ]
-      }
-    }
-  ]
+      };
+
+      // Names are a separate array (same order as route)
+      const stopNames = [
+        "Santas Workshop",
+        "Murmansk",
+        "Arkhangelsk",
+        "Saint Petersburg",
+        "Moscow",
+        "Kiev",
+        "Bucharest",
+        "Odzak",
+        "Zagreb",
+        "Trieste",
+        "Graz",
+        "Vienna",
+        "Brno",
+        "Prague",
+        "Pizen",
+        "Regensburg",
+        "Munich",
+        "Innsbruck",
+        "Milan",
+        "Nimes",
+        "Barcelona",
+        "Valencia",
+        "Almeria",
+        "Gibraltar",
+        "Jerez de la Frontera",
+        "Lisbon",
+        "Porto",
+        "Valladolid",
+        "Madrid",
+        "Zaragoza",
+        "Toulouse",
+        "Lyon",
+        "Genf",
+        "Sion",
+        "Thun",
+        "Bern",
+        "Burgdorf",
+        "Strengelbach",
+        "Zofingen",
+        "Dijon",
+        "Paris",
+        "Amiens",
+        "Lille",
+        "Brussels",
+        "Duesseldorf",
+        "Leipzig",
+        "Berlin",
+        "Hamburg",
+        "London",
+        "Birmingham",
+        "Leeds",
+        "Newcastle",
+        "Aberdeen",
+        "Bergen",
+        "Trondheim",
+        "Tromso",
+        "Santa's Workshop"
+      ];
+
+      const coordsLngLat = geojson.features[0].geometry.coordinates;
+      const route = coordsLngLat.map(([lng, lat]) => [lat, lng]);
+
+      const remainingLine = L.polyline(route, {
+        color: "grey",
+        weight: 5,
+        opacity: 0.7
+      }).addTo(map);
+
+      map.fitBounds(remainingLine.getBounds(), { padding: [30, 30] });
+const visitedLine = L.polyline([route[0]], {
+  color: "red",
+  weight: 5,
+  opacity: 0.9
+}).addTo(map);
+
+      // Optional: show clickable stop tags using your manual city names
+      route.forEach((point, i) => {
+        const name = stopNames[i] ?? `Stop ${i + 1}`;
+        const dot = L.circleMarker(point, {
+          radius: 5,
+          color: "#444",
+          weight: 2,
+          fillColor: "#fff",
+          fillOpacity: 1
+        }).addTo(map);
+
+        dot.bindPopup(`<b>${name}</b>`);
+        dot.bindTooltip(name, { direction: "top" });
+      });
+
+      // Optional: quick check in console
+      console.log("route length:", route.length, "stopNames length:", stopNames.length);
+      const santaIcon = L.icon({
+  iconUrl: "Santa.png",     // or "santa.png"
+  iconSize: [64, 64],
+  iconAnchor: [32, 32]
+});
+
+const santa = L.marker(route[0], { icon: santaIcon }).addTo(map);
+const toRad = d => d * Math.PI / 180;
+
+// Distance between two [lat,lng] points in meters
+function distMeters(a, b) {
+  const R = 6371000;
+  const dLat = toRad(b[0] - a[0]);
+  const dLng = toRad(b[1] - a[1]);
+  const lat1 = toRad(a[0]);
+  const lat2 = toRad(b[0]);
+
+  const x =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(lat1) * Math.cos(lat2) * (Math.sin(dLng / 2) ** 2);
+
+  return 2 * R * Math.asin(Math.sqrt(x));
 }
-    </script>
+
+// Interpolate between two [lat,lng] points
+function lerp(a, b, t) {
+  return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
+}
+const segLens = [];
+let totalDist = 0;
+
+for (let i = 0; i < route.length - 1; i++) {
+  const d = distMeters(route[i], route[i + 1]);
+  segLens.push(d);
+  totalDist += d;
+}
+function positionAtDistance(dMeters) {
+  let d = dMeters;
+
+  for (let i = 0; i < segLens.length; i++) {
+    if (d <= segLens[i]) {
+      const t = segLens[i] === 0 ? 0 : d / segLens[i];
+      return { i, pos: lerp(route[i], route[i + 1], t) };
+    }
+    d -= segLens[i];
+  }
+
+  // End of route
+  return { i: route.length - 2, pos: route[route.length - 1] };
+}
+const speed = 250; // meters per second (change this!)
+let traveled = 0;
+let lastTime = null;
+
+const cityEl = document.getElementById("city");
+function tick(ts) {
+  if (lastTime === null) lastTime = ts;
+  const dt = (ts - lastTime) / 1000; // seconds
+  lastTime = ts;
+
+  traveled += speed * dt;
+  if (traveled > totalDist) traveled = totalDist;
+
+  const { i, pos } = positionAtDistance(traveled);
+  cityEl.textContent = stopNames[i] ?? `Stop ${i + 1}`;
+
+
+  // 1) move Santa
+  santa.setLatLng(pos);
+
+  // 2) update red visited + grey remaining at same time
+  const visitedPts = route.slice(0, i + 1).concat([pos]);
+  const remainingPts = [pos].concat(route.slice(i + 1));
+
+  visitedLine.setLatLngs(visitedPts);
+  remainingLine.setLatLngs(remainingPts);
+
+  if (traveled < totalDist) {
+    requestAnimationFrame(tick);
+  } else {
+    // finish cleanly
+    santa.setLatLng(route[route.length - 1]);
+  }
+}
+
+requestAnimationFrame(tick);
+  </script>
   </body>
 </html>
