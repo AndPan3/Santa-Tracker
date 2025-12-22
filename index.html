@@ -234,6 +234,17 @@ const visitedLine = L.polyline([route[0]], {
   iconSize: [64, 64],
   iconAnchor: [32, 32]
 });
+map.on("zoom", () => {
+  const zoom = map.getZoom();
+  const scale = Math.pow(2, zoom - BASE_ZOOM); // natural map scaling
+  const size = BASE_ICON_SIZE * scale;
+
+  santa.setIcon(L.icon({
+    iconUrl: "Santa.png",
+    iconSize: [size, size],
+    iconAnchor: [size / 2, size / 2]
+  }));
+});
 
 const santa = L.marker(route[0], { icon: santaIcon }).addTo(map);
 const toRad = d => d * Math.PI / 180;
@@ -284,6 +295,8 @@ const START_UTC = "2025-12-22T09:00:00Z"; // example: Dec 24, 10:00 Zurich (CET)
 const START_MS = Date.parse(START_UTC);
 const TOTAL_PRESENTS = 740000000;
 const PRESENTS_PER_METER = TOTAL_PRESENTS / totalDist; // auto-calculated ppm
+const BASE_ZOOM = map.getZoom();
+const BASE_ICON_SIZE = 64;
 
 
 function getTraveledNowMeters() {
