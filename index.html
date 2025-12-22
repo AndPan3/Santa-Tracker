@@ -1,36 +1,39 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <style>
-  html, body {
-    height: 100%;
-    margin: 0;
-  }
-  #map {
-    height: 100%;
-    width: 100%;
-  }
-</style>
-    <title> Santa Tracker </title>
-    <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    />
     <meta charset="utf-8">
+    <title>Santa Tracker</title>
+
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+
+    <style>
+      html, body {
+        height: 100%;
+        margin: 0;
+      }
+      #map {
+        height: 100%;
+        width: 100%;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="map"></div>
+
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-  // Create the map and set a starting view
-  const map = L.map("map").setView([47.3769, 8.5417], 6); // Zurich-ish
+      // Create the map and set a starting view
+      const map = L.map("map").setView([47.3769, 8.5417], 6);
 
-  // Add OpenStreetMap tiles
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    maxZoom: 19,
-    attribution: "&copy; OpenStreetMap contributors"
-  }).addTo(map);
-</script>
-
-  </head>
-  <body>
-  <div id="map"></div>
-</body>
+      // Add OpenStreetMap tiles
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution: "&copy; OpenStreetMap contributors"
+      }).addTo(map);
+    </script>
+  </body>
 </html>
