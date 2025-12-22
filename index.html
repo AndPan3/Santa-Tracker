@@ -34,6 +34,22 @@
         maxZoom: 19,
         attribution: "&copy; OpenStreetMap contributors"
       }).addTo(map);
+      // 1) Your GeoJSON (paste yours here)
+const geojson = {
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {},
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          /* paste your coordinates array here */
+        ]
+      }
+    }
+  ]
+}
     </script>
   </body>
 </html>
