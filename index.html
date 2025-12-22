@@ -16,6 +16,21 @@
     rel="stylesheet"
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     />
-    <meta charset="utf8">
+    <meta charset="utf-8">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+  // Create the map and set a starting view
+  const map = L.map("map").setView([47.3769, 8.5417], 6); // Zurich-ish
+
+  // Add OpenStreetMap tiles
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 19,
+    attribution: "&copy; OpenStreetMap contributors"
+  }).addTo(map);
+</script>
+
   </head>
+  <body>
+  <div id="map"></div>
+</body>
 </html>
