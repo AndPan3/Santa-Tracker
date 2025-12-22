@@ -27,14 +27,17 @@
   </head>
 
   <body>
-    <div id="hud" style="
+<div id="hud" style="
   position: absolute; z-index: 999; top: 12px; left: 12px;
   background: rgba(255,255,255,0.9); padding: 10px 12px;
   border-radius: 10px; font-family: system-ui; font-size: 14px;
   box-shadow: 0 4px 18px rgba(0,0,0,0.12);
 ">
-  Now delivering in: <b id="city">...</b>
+  Now delivering in: <b id="city">...</b><br>
+  Presents given out: <b id="presents">0</b><br>
+  Distance left: <b id="remaining">0</b> m
 </div>
+
 
     <div id="map"></div>
 
@@ -62,6 +65,7 @@
                 [32.829867360521774, 68.94266954248755],
                 [40.49019640444814, 64.58670511854118],
                 [30.39260905411001, 59.98417844987438],
+                [35.92270869757283,56.85803667449693],
                 [37.670781021103494, 55.64500146010397],
                 [30.48335804659081, 50.496973501102076],
                 [26.050280726771575, 44.501559600880796],
@@ -127,6 +131,7 @@
         "Murmansk",
         "Arkhangelsk",
         "Saint Petersburg",
+        "Tver",
         "Moscow",
         "Kiev",
         "Bucharest",
@@ -265,27 +270,54 @@ function positionAtDistance(dMeters) {
   // End of route
   return { i: route.length - 2, pos: route[route.length - 1] };
 }
-const speed = 250; // meters per second (change this!)
-let traveled = 0;
+const speed = 200; // meters per second (change this!)
+const START_UTC = "2025-12-24T09:00:00Z"; // example: Dec 24, 10:00 Zurich (CET) = 09:00 UTC
+const START_MS = Date.parse(START_UTC);
+
+function getTraveledNowMeters() {
+  const nowMs = Date.now();
+  const elapsedSec = (nowMs - START_MS) / 1000;
+  const elapsedClamped = Math.max(0, elapsedSec); // before start => 0
+  return Math.min(totalDist, elapsedClamped * speed);
+}
+
+let traveled = getTraveledNowMeters();
 let lastTime = null;
 
+
+
 const cityEl = document.getElementById("city");
+const presentsEl = document.getElementById("presents");
+const remainingEl = document.getElementById("remaining");
+
 function tick(ts) {
   if (lastTime === null) lastTime = ts;
-  const dt = (ts - lastTime) / 1000; // seconds
+  const dt = (ts - lastTime) / 1000; // seconds since last frame
   lastTime = ts;
 
-  traveled += speed * dt;
+  // move forward at constant speed
+  if (Date.now() < START_MS) {
+  cityEl.textContent = "Starting soon...";
+}
+
+  traveled = getTraveledNowMeters();
+
   if (traveled > totalDist) traveled = totalDist;
 
+  // update HUD numbers
+  presentsEl.textContent = Math.floor(traveled); // temporary: 1m = 1 present
+  const remaining = Math.max(0, totalDist - traveled);
+  remainingEl.textContent = Math.floor(remaining);
+
+  // find current position on the route
   const { i, pos } = positionAtDistance(traveled);
-  cityEl.textContent = stopNames[i] ?? `Stop ${i + 1}`;
+ const nextCity = stopNames[i + 1] ?? "Final destination";
+cityEl.textContent = nextCity;
 
 
-  // 1) move Santa
+  // move Santa + update lines
   santa.setLatLng(pos);
 
-  // 2) update red visited + grey remaining at same time
   const visitedPts = route.slice(0, i + 1).concat([pos]);
   const remainingPts = [pos].concat(route.slice(i + 1));
 
@@ -295,8 +327,8 @@ function tick(ts) {
   if (traveled < totalDist) {
     requestAnimationFrame(tick);
   } else {
-    // finish cleanly
     santa.setLatLng(route[route.length - 1]);
+    remainingEl.textContent = "0";
   }
 }
 
