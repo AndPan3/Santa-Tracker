@@ -57,7 +57,7 @@
 
       // Add OpenStreetMap tiles
         L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        maxZoom: 19,
+        maxZoom: 21,
         attribution: "&copy; OpenStreetMap contributors"
       }).addTo(map);
 
@@ -134,7 +134,6 @@
         ]
       };
 
-      // Names are a separate array (same order as route)
       const stopNames = [
         "Santas Workshop",
         "Murmansk",
@@ -200,7 +199,7 @@
       const route = coordsLngLat.map(([lng, lat]) => [lat, lng]);
 
       const remainingLine = L.polyline(route, {
-        color: "grey",
+        color: "black",
         weight: 5,
         opacity: 0.7
       }).addTo(map);
@@ -226,14 +225,6 @@ const visitedLine = L.polyline([route[0]], {
         dot.bindPopup(`<b>${name}</b>`);
         dot.bindTooltip(name, { direction: "top" });
       });
-
-      // Optional: quick check in console
-      console.log("route length:", route.length, "stopNames length:", stopNames.length);
-      const santaIcon = L.icon({
-  iconUrl: "fajar-rizqi-usD6Xo8lX5E-unsplash.png",     // or "santa.png"
-  iconSize: [64, 64],
-  iconAnchor: [32, 32]
-});
 map.on("zoom", () => {
   const zoom = map.getZoom();
   const scale = Math.pow(2, zoom - BASE_ZOOM); // natural map scaling
@@ -290,11 +281,11 @@ function positionAtDistance(dMeters) {
   // End of route
   return { i: route.length - 2, pos: route[route.length - 1] };
 }
-const speed = 200; // meters per second (change this!)
-const START_UTC = "2025-12-24T09:00:00Z"; // example: Dec 24, 10:00 Zurich (CET) = 09:00 UTC
+const speed = 200; // meters per second (change this based on your needs!)
+const START_UTC = "2025-12-24T09:00:00Z"; 
 const START_MS = Date.parse(START_UTC);
 const TOTAL_PRESENTS = 740000000;
-const PRESENTS_PER_METER = TOTAL_PRESENTS / totalDist; // auto-calculated ppm
+const PRESENTS_PER_METER = TOTAL_PRESENTS / totalDist; // auto-calculated ppm (presents per meter)
 const BASE_ZOOM = map.getZoom();
 const BASE_ICON_SIZE = 64;
 
@@ -302,7 +293,7 @@ const BASE_ICON_SIZE = 64;
 function getTraveledNowMeters() {
   const nowMs = Date.now();
   const elapsedSec = (nowMs - START_MS) / 1000;
-  const elapsedClamped = Math.max(0, elapsedSec); // before start => 0
+  const elapsedClamped = Math.max(0, elapsedSec); /
   return Math.min(totalDist, elapsedClamped * speed);
 }
 
