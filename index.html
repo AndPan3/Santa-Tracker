@@ -231,18 +231,6 @@ const visitedLine = L.polyline([route[0]], {
   iconSize: [64, 64],
   iconAnchor: [32, 32]
 });
-map.on("zoom", () => {
-  const zoom = map.getZoom();
-  const scale = Math.pow(2, zoom - BASE_ZOOM); // natural map scaling
-  const size = BASE_ICON_SIZE * scale;
-
-  santa.setIcon(L.icon({
-    iconUrl: "fajar-rizqi-usD6Xo8lX5E-unsplash.png",
-    iconSize: [size, size],
-    iconAnchor: [size / 2, size / 2]
-  }));
-});
-
 const santa = L.marker(route[0], { icon: santaIcon }).addTo(map);
 const toRad = d => d * Math.PI / 180;
 
@@ -295,11 +283,23 @@ const PRESENTS_PER_METER = TOTAL_PRESENTS / totalDist; // auto-calculated ppm (p
 const BASE_ZOOM = map.getZoom();
 const BASE_ICON_SIZE = 64;
 
+map.on("zoom", () => {
+  const zoom = map.getZoom();
+  const scale = Math.pow(2, zoom - BASE_ZOOM); // natural map scaling
+  const size = BASE_ICON_SIZE * scale;
+
+  santa.setIcon(L.icon({
+    iconUrl: "fajar-rizqi-usD6Xo8lX5E-unsplash.png",
+    iconSize: [size, size],
+    iconAnchor: [size / 2, size / 2]
+  }));
+});
+
 
 function getTraveledNowMeters() {
   const nowMs = Date.now();
   const elapsedSec = (nowMs - START_MS) / 1000;
-  const elapsedClamped = Math.max(0, elapsedSec); /
+  const elapsedClamped = Math.max(0, elapsedSec);
   return Math.min(totalDist, elapsedClamped * speed);
 }
 
