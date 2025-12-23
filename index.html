@@ -23,6 +23,7 @@
   Now delivering in: <b id="city">...</b><br>
   Presents given out: <b id="presents">0</b><br>
   Presents left: <b id="remaining">0</b>
+ 
   Progress:
 <div class="progress-container">
   <div id="bar" class="progress-bar"></div>
@@ -285,7 +286,7 @@ function positionAtDistance(dMeters) {
   // End of route
   return { i: route.length - 2, pos: route[route.length - 1] };
 }
-const speed = 200; // meters per second (change this based on your needs!)
+const speed = 206; // meters per second (change this based on your needs!)
 const START_UTC = "2025-12-24T09:00:00Z"; 
 const START_MS = Date.parse(START_UTC);
 const TOTAL_PRESENTS = 740000000;
