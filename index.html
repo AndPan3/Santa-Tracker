@@ -225,6 +225,12 @@ const visitedLine = L.polyline([route[0]], {
         dot.bindPopup(`<b>${name}</b>`);
         dot.bindTooltip(name, { direction: "top" });
       });
+      console.log("route length:", route.length, "stopNames length:", stopNames.length);
+      const santaIcon = L.icon({
+  iconUrl: "fajar-rizqi-usD6Xo8lX5E-unsplash.png",
+  iconSize: [64, 64],
+  iconAnchor: [32, 32]
+});
 map.on("zoom", () => {
   const zoom = map.getZoom();
   const scale = Math.pow(2, zoom - BASE_ZOOM); // natural map scaling
