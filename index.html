@@ -15,34 +15,19 @@
       href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     />
 
-    <style>
-      html, body {
-        height: 100%;
-        margin: 0;
-      }
-      #map {
-        height: 100%;
-        width: 100%;
-      }
-    </style>
+    <link rel="stylesheet" href="styles.css" />
   </head>
 
   <body>
-<div id="hud" style="
-  position: absolute; z-index: 999; top: 12px; right: 12px;
-  background: rgba(255,255,255,0.9); padding: 10px 12px;
-  border-radius: 10px; font-family: system-ui; font-size: 14px;
-  box-shadow: 0 4px 18px rgba(0,0,0,0.12);
-  
-">
+<div id="hud">
   Now delivering in: <b id="city">...</b><br>
   Presents given out: <b id="presents">0</b><br>
-  Presents left: <b id="remaining">0</b> 
+  Presents left: <b id="remaining">0</b>
   Progress:
-<div style="margin-top:6px; width:220px; height:10px; background:#ddd; border-radius:999px; overflow:hidden;">
-  <div id="bar" style="height:100%; width:0%; background:#e11d48;"></div>
+<div class="progress-container">
+  <div id="bar" class="progress-bar"></div>
 </div>
-<div style="margin-top:4px; font-size:12px; opacity:0.8;">
+<div class="progress-text">
   <span id="pct">0</span>%
 </div>
 
